@@ -20,8 +20,8 @@
   <script>
     window.__APP_STATE__ = {
       isAuthenticated: {{ is_authenticated | tojson }},
-    isAdmin: { { is_admin | tojson } },
-    empId: { { emp_id | tojson } }
+    isAdmin: {{ is_admin | tojson }},
+    empId: {{ emp_id | tojson }}
     };
   </script>
   <script src="/static/js/auth.js" defer></script>
