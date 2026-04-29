@@ -11,15 +11,14 @@ class Settings(BaseSettings):
     DATA_BACKEND: str = "excel"  # excel | db
     EXCEL_PATH: str = "data/master.xlsx"
 
-    # SMTP (OTP 메일 발송)
-    SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587
-    SMTP_USER: str = ""
-    SMTP_PASSWORD: str = ""
-    SMTP_FROM: str = ""
-
-    # 개발 모드 (이메일 발송 대신 콘솔 출력)
-    DEV_MODE: bool = True
+    # SMTP 설정 (이곳에 실제 정보를 직접 입력)
+    SMTP_HOST: str = "smtps.hiworks.com" # 또는 smtp.gmail.com
+    SMTP_PORT: int = 465
+    SMTP_USER: str = "real.jung@kbs.co.kr"
+    SMTP_PASSWORD: str = "tkakrnl333"
+    SMTP_FROM: str = "real.jung@kbs.co.kr"
+    # 중요: 운영 환경에서는 False로 설정해야 실제 메일이 발송됨
+    DEV_MODE: bool = False 
 
     # JWT
     TOKEN_EXPIRE_HOURS: int = 8

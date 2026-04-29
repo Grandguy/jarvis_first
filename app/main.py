@@ -10,7 +10,7 @@ from app.services.session_service import decode_session_token
 
 # FastAPI 앱 생성
 app = FastAPI(
-    title="사번 OTP 인증 기반 컨텐츠 열람 시스템",
+    title="OTP 기반 컨텐츠 열람 시스템",
     version="1.0.0",
     docs_url="/docs",  # 개발환경에서만 활성화, 프로덕션에서는 None으로 변경
 )
