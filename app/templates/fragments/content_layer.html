@@ -1,0 +1,93 @@
+<div class="content-container">
+  <header class="content-header">
+    <div class="header-left">
+      <h1>📋 내 컨텐츠</h1>
+      <span class="badge">{{ contents|length }}건</span>
+    </div>
+    <div class="header-right">
+      <span class="user-info">{{ user.sub }}님</span>
+      <button class="btn btn-sm btn-ghost" onclick="handleLogout()">로그아웃</button>
+    </div>
+  </header>
+
+  <div class="content-list" id="content-list">
+    {% if contents %}
+      {% for item in contents %}
+      <div class="content-card glass-card {% if item.is_confirmed %}confirmed{% endif %}" data-id="{{ item.content_id }}" data-content-id="{{ item.content_id }}">
+        <div class="content-card-header">
+          <h3>{{ item.title }}</h3>
+        </div>
+        <div class="content-body">
+          <div class="body-section">
+            <strong>내용</strong>
+            <p>{{ item.body_1 }}</p>
+          </div>
+          {% if item.body_2 %}
+          <div class="body-section">
+            <strong>내용 II</strong>
+            <p>{{ item.body_2 }}</p>
+          </div>
+          {% endif %}
+          {% if item.body_3 %}
+          <div class="body-section">
+            <strong>내용 III</strong>
+            <p>{{ item.body_3 }}</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Yes/No 답변 유형 -->
+        {% if item.answer_type == "yes_no" %}
+          {% if item.is_confirmed %}
+            <div style="margin-top:1rem;">
+              <span style="display:inline-block; padding:8px 20px; border-radius:6px;
+                           background:var(--success-bg); color:var(--success); font-weight:600;">
+                ✅ {{ item.confirmed_text }}
+              </span>
+            </div>
+          {% else %}
+            <div class="yesno-wrap" style="display:flex; gap:12px; margin-top:1rem;">
+              <button onclick="handleYesNo('{{ item.content_id }}', 'Yes')"
+                      class="btn btn-primary btn-sm">Yes</button>
+              <button onclick="handleYesNo('{{ item.content_id }}', 'No')"
+                      class="btn btn-ghost btn-sm">No</button>
+            </div>
+          {% endif %}
+
+        <!-- 문구 입력 답변 유형 -->
+        {% elif item.answer_type == "text" %}
+          {% if item.is_confirmed %}
+            <div style="background:rgba(255,255,255,0.04); border-radius:6px; padding:12px 16px;
+                        color:var(--text-secondary); font-size:14px; margin-top:1rem;">
+              {{ item.confirmed_text }}
+              <span style="margin-left:12px; color:var(--success); font-weight:600;">✅ 제출 완료</span>
+            </div>
+          {% else %}
+            <div style="margin-top:1rem;">
+              <textarea id="text-{{ item.content_id }}" rows="3"
+                        placeholder="내용을 입력하세요"
+                        style="width:100%; padding:10px; border:1px solid var(--glass-border);
+                               border-radius:6px; font-size:14px; resize:vertical;
+                               background:rgba(255,255,255,0.04); color:var(--text-primary);
+                               margin-bottom:8px;"></textarea>
+              <button onclick="handleTextSubmit('{{ item.content_id }}')"
+                      class="btn btn-primary btn-sm">제출</button>
+            </div>
+          {% endif %}
+        {% endif %}
+
+        {% if item.confirmed_at %}
+        <div class="content-footer">
+          <span class="confirmed-time">✅ 확인일시: {{ item.confirmed_at }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state glass-card">
+        <div class="empty-icon">📭</div>
+        <p>열람할 컨텐츠가 없습니다.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>

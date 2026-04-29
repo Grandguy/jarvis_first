@@ -1,0 +1,203 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>⚙️ 관리자 패널</h2>
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchAdminTab('contents')">컨텐츠 관리</button>
+      <button class="tab-btn" onclick="switchAdminTab('users')">사용자 목록</button>
+      <button class="tab-btn" onclick="switchAdminTab('confirmations')">확인 현황</button>
+    </div>
+  </div>
+
+  <!-- 컨텐츠 관리 탭 -->
+  <div id="admin-tab-contents" class="admin-tab-panel">
+    <div class="admin-toolbar">
+      <button class="btn btn-primary btn-sm" onclick="openCreateModal()">+ 새 컨텐츠</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadAdminContents()">🔄 새로고침</button>
+    </div>
+    <div id="admin-contents-list" class="admin-table-wrapper">
+      <p class="loading-text">불러오는 중...</p>
+    </div>
+  </div>
+
+  <!-- 사용자 목록 탭 -->
+  <div id="admin-tab-users" class="admin-tab-panel hidden">
+    <div id="admin-users-list" class="admin-table-wrapper">
+      <p class="loading-text">불러오는 중...</p>
+    </div>
+  </div>
+
+  <!-- 확인 현황 탭 -->
+  <div id="admin-tab-confirmations" class="admin-tab-panel hidden">
+    <section id="confirmation-panel">
+      <div class="filter-row" style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <select id="filter-content-id" class="form-select">
+          <option value="">전체 컨텐츠</option>
+        </select>
+        <select id="filter-emp-id" class="form-select">
+          <option value="">전체 대상자</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="loadConfirmations()">조회</button>
+      </div>
+      <div id="admin-confirmations-list" class="admin-table-wrapper">
+        <p class="loading-text">불러오는 중...</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- 새 컨텐츠 작성 모달 -->
+<div id="create-content-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+
+    <!-- 헤더 -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px;">
+      <h2 style="margin:0; font-size:18px;">새 컨텐츠 작성</h2>
+      <button onclick="closeCreateModal()"
+              style="background:none; border:none; font-size:22px; cursor:pointer; color:#888;">✕</button>
+    </div>
+
+    <!-- 2단 레이아웃 -->
+    <div style="display:grid; grid-template-columns:480px 1fr; gap:40px; align-items:start;">
+
+      <!-- ── 좌: 대상자 선택 패널 ── -->
+      <div>
+        <p style="font-weight:600; margin:0 0 10px; color:var(--text-primary);">대상자 선택</p>
+
+        <!-- 전체선택 + 검색 헤더 -->
+        <div style="display:flex; align-items:center; gap:12px;
+                    background:rgba(255,255,255,0.04); border:1px solid var(--glass-border);
+                    border-bottom:none; border-radius:8px 8px 0 0;
+                    padding:10px 14px;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap; color:var(--text-secondary);">
+            <input type="checkbox" id="select-all-users" onchange="toggleSelectAll(this)">
+            전체선택
+          </label>
+          <input type="text" id="user-search" placeholder="이름 또는 사번 검색"
+                 oninput="filterUserList(this.value)"
+                 style="flex:1; padding:6px 10px; border:1px solid rgba(255,255,255,0.1);
+                        border-radius:4px; font-size:13px; background:rgba(255,255,255,0.04);
+                        color:var(--text-primary);">
+        </div>
+
+        <!-- 사용자 목록 테이블 -->
+        <div style="border:1px solid var(--glass-border); border-radius:0 0 8px 8px;
+                    max-height:340px; overflow-y:auto;">
+          <table class="data-table" style="box-shadow:none; border-radius:0;">
+            <thead style="position:sticky; top:0; z-index:1;">
+              <tr>
+                <th style="width:36px;"></th>
+                <th>이름</th>
+                <th>사번</th>
+                <th>이메일</th>
+              </tr>
+            </thead>
+            <tbody id="user-select-tbody">
+              <!-- JS에서 동적 주입 -->
+            </tbody>
+          </table>
+        </div>
+        <p id="selected-count" style="font-size:12px; color:var(--text-muted); margin:8px 0 0;">선택됨: 0명</p>
+      </div>
+
+      <!-- ── 우: 컨텐츠 입력 패널 ── -->
+      <div style="display:flex; flex-direction:column; gap:20px;">
+
+        <!-- 제목 -->
+        <div>
+          <label style="font-weight:600; display:block; margin-bottom:6px; color:var(--text-primary);">제목</label>
+          <input type="text" id="content-title" placeholder="컨텐츠 제목"
+                 style="width:100%; padding:10px 12px; border:1px solid var(--glass-border);
+                        border-radius:6px; font-size:14px; background:rgba(255,255,255,0.04);
+                        color:var(--text-primary);">
+        </div>
+
+        <!-- 내용 -->
+        <div>
+          <label style="font-weight:600; display:block; margin-bottom:6px; color:var(--text-primary);">내용</label>
+          <textarea id="content-body1" rows="6" placeholder="내용을 입력하세요"
+                    style="width:100%; padding:10px 12px; border:1px solid var(--glass-border);
+                           border-radius:6px; font-size:14px; resize:vertical;
+                           background:rgba(255,255,255,0.04); color:var(--text-primary);"></textarea>
+        </div>
+
+        <!-- 답변 유형 선택 (Yes/No ↔ 문구 입력) -->
+        <div>
+          <label style="font-weight:600; display:block; margin-bottom:10px; color:var(--text-primary);">답변 유형</label>
+          <div style="display:flex; gap:16px;">
+
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;
+                          border:1px solid var(--glass-border); border-radius:8px; padding:14px 20px;
+                          flex:1; transition:border-color .2s;"
+                   id="label-yes-no">
+              <input type="radio" name="answer_type" value="yes_no" checked
+                     onchange="updateAnswerTypeUI()">
+              <div>
+                <div style="font-weight:600; font-size:14px; color:var(--text-primary);">Yes / No</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">버튼으로 동의 여부 응답</div>
+              </div>
+            </label>
+
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;
+                          border:1px solid var(--glass-border); border-radius:8px; padding:14px 20px;
+                          flex:1; transition:border-color .2s;"
+                   id="label-text">
+              <input type="radio" name="answer_type" value="text"
+                     onchange="updateAnswerTypeUI()">
+              <div>
+                <div style="font-weight:600; font-size:14px; color:var(--text-primary);">문구 입력</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">직접 텍스트를 입력하여 응답</div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- 버튼 -->
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+          <button onclick="closeCreateModal()"
+                  class="btn btn-ghost">취소</button>
+          <button onclick="submitCreateContent()"
+                  class="btn btn-primary">컨텐츠 생성</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 컨텐츠 수정 모달 (기존 유지) -->
+<div id="content-modal" class="modal hidden">
+  <div class="modal-overlay-bg" onclick="closeContentModal()"></div>
+  <div class="modal-content glass-card">
+    <h3 id="modal-title">컨텐츠 수정</h3>
+    <form id="content-form" onsubmit="return false;">
+      <input type="hidden" id="modal-content-id">
+      <div class="form-group">
+        <label for="target-emp-select">대상자</label>
+        <select id="target-emp-select" required>
+          <option value="">-- 대상자 선택 --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>제목</label>
+        <input type="text" id="modal-title-input" placeholder="컨텐츠 제목">
+      </div>
+      <div class="form-group">
+        <label>내용 I (필수)</label>
+        <textarea id="modal-body1" rows="3" placeholder="필수 내용"></textarea>
+      </div>
+      <div class="form-group">
+        <label>내용 II (선택)</label>
+        <textarea id="modal-body2" rows="2" placeholder="선택 내용"></textarea>
+      </div>
+      <div class="form-group">
+        <label>내용 III (선택)</label>
+        <textarea id="modal-body3" rows="2" placeholder="선택 내용"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeContentModal()">취소</button>
+        <button class="btn btn-primary" id="modal-submit-btn" onclick="submitContentForm()">저장</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="auth-container">
+  <div class="auth-card glass-card">
+    <div class="auth-logo">
+      <div class="logo-icon">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="22" stroke="url(#g1)" stroke-width="2.5"/>
+          <path d="M16 24l6 6 12-12" stroke="url(#g1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs><linearGradient id="g1" x1="0" y1="0" x2="48" y2="48"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+        </svg>
+      </div>
+      <h1>컨텐츠 열람 시스템</h1>
+      <p class="auth-subtitle">사번을 입력하여 인증을 시작하세요</p>
+    </div>
+
+    <!-- Step 1: 사번 입력 -->
+    <div id="auth-step1">
+      <div class="form-group">
+        <label for="input-emp-id">사번</label>
+        <input type="text" id="input-emp-id" placeholder="예: EMP001" maxlength="10" autocomplete="off">
+      </div>
+      <button id="btn-request-otp" class="btn btn-primary" onclick="requestOTP()">
+        <span class="btn-text">OTP 요청</span>
+        <span class="btn-loader hidden"></span>
+      </button>
+    </div>
+
+    <!-- Step 2: OTP 입력 -->
+    <div id="auth-step2" class="hidden">
+      <div class="otp-info">
+        <p>📧 <span id="otp-email-hint"></span> 으로 인증 코드가 발송되었습니다.</p>
+      </div>
+      <div class="form-group">
+        <label for="input-otp">인증 코드 (6자리)</label>
+        <input type="text" id="input-otp" placeholder="000000" maxlength="6" autocomplete="off" inputmode="numeric">
+      </div>
+      <button id="btn-verify-otp" class="btn btn-primary" onclick="verifyOTP()">
+        <span class="btn-text">확인</span>
+        <span class="btn-loader hidden"></span>
+      </button>
+      <button class="btn btn-ghost" onclick="backToStep1()">← 사번 다시 입력</button>
+    </div>
+
+    <div id="auth-message" class="message hidden"></div>
+  </div>
+  <div class="auth-bg-decor"></div>
+</div>
